@@ -1,0 +1,19 @@
+# camtriage requirements
+# Python 3.9–3.13 required (SpeciesNet constraint)
+#
+# Install into a dedicated virtualenv:
+#   python3.11 -m venv camenv
+#   source camenv/bin/activate
+#   pip install -r requirements.txt
+
+# Core — required
+speciesnet==5.0.4
+pyyaml>=6.0
+
+# EXIF support — recommended
+Pillow>=10.0
+
+# Apple Foundation Models annotation — optional
+# Requires macOS with Apple Intelligence enabled.
+# Vision (image input) requires macOS 27 Golden Gate or later.
+apple-fm-sdk>=0.2.0

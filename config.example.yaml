@@ -1,0 +1,69 @@
+# camtriage configuration
+# Copy to config.yaml and edit for your location and preferences.
+
+# ── Location ──────────────────────────────────────────────────────────────────
+# Used by SpeciesNet to apply geographic priors — improves accuracy.
+# country: ISO 3166-1 alpha-3 (3-letter) code  e.g. USA, CAN, GBR, AUS
+# state:   ISO 3166-2 subdivision code          e.g. ME, CA, ON, VIC
+location:
+  country: USA
+  state: ME
+
+# ── Classification ────────────────────────────────────────────────────────────
+# min_confidence: 0.0–1.0. Images below this threshold go to the review queue
+#   rather than being copied or skipped outright.
+#   0.50 is a good starting point; raise to 0.70 for stricter triage.
+min_confidence: 0.50
+
+# Labels SpeciesNet may return that you never want copied.
+# Add any species you want to suppress (e.g. "domestic cat" if you don't care).
+skip_labels:
+  - blank
+  - empty
+  - vehicle
+  - human
+  - person
+  - homo sapiens
+  - animalia
+
+# ── Species behavior ──────────────────────────────────────────────────────────
+# Grounded behavioral facts used to generate annotations.
+# active:  normal activity period (diurnal / crepuscular / nocturnal / any)
+# flag_if: time-of-day label considered UNUSUAL for this species
+#          (dawn / daytime / dusk / night)  — null means never flag
+#
+# Add, remove, or edit entries for your region.
+# SpeciesNet label matching is case-insensitive and tries partial matches.
+species_behavior:
+  northern raccoon:      { active: nocturnal,   flag_if: daytime }
+  raccoon:               { active: nocturnal,   flag_if: daytime }
+  red fox:               { active: crepuscular, flag_if: daytime }
+  white-tailed deer:     { active: crepuscular, flag_if: daytime }
+  eastern gray squirrel: { active: diurnal,     flag_if: night   }
+  gray squirrel:         { active: diurnal,     flag_if: night   }
+  striped skunk:         { active: nocturnal,   flag_if: daytime }
+  skunk:                 { active: nocturnal,   flag_if: daytime }
+  bobcat:                { active: crepuscular, flag_if: daytime }
+  wild turkey:           { active: diurnal,     flag_if: night   }
+  turkey:                { active: diurnal,     flag_if: night   }
+  domestic cat:          { active: any,         flag_if: null    }
+  pileated woodpecker:   { active: diurnal,     flag_if: night   }
+  woodpecker:            { active: diurnal,     flag_if: night   }
+  american crow:         { active: diurnal,     flag_if: night   }
+  crow:                  { active: diurnal,     flag_if: night   }
+  corvus species:        { active: diurnal,     flag_if: night   }
+  common raven:          { active: diurnal,     flag_if: night   }
+  coyote:                { active: crepuscular, flag_if: daytime }
+  black bear:            { active: crepuscular, flag_if: night   }
+  moose:                 { active: crepuscular, flag_if: daytime }
+  fisher:                { active: nocturnal,   flag_if: daytime }
+  river otter:           { active: diurnal,     flag_if: night   }
+  porcupine:             { active: nocturnal,   flag_if: daytime }
+
+# ── Annotation ────────────────────────────────────────────────────────────────
+# Apple Foundation Models text annotation (macOS with Apple Intelligence).
+# Vision annotation (image input) requires macOS 27 Golden Gate or later.
+annotation:
+  enabled: true          # set false to skip annotation entirely
+  # Location description used in prompts — plain English, any format
+  location_description: "Maine, USA"

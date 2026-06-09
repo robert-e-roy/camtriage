@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+
+# Virtual environments
+camenv/
+speciesenv/
+venv/
+env/
+.venv/
+
+# Output folders — don't commit triage results
+output/
+output_*/
+triage_*/
+
+# Config with personal paths — commit config.example.yaml, not config.yaml
+config.yaml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+triage_log.json
