@@ -174,6 +174,45 @@ dest/
 
 ---
 
+## Video handling
+
+Most game cams produce both still images and short video clips for the same
+trigger event. camtriage handles video via **timestamp matching** — the simplest
+approach that works well in practice.
+
+### How it works
+
+After classifying all stills, camtriage compares every video file's filesystem
+timestamp against the timestamps of copied stills. If a video falls within the
+configured window (default 60 seconds) of an interesting or alert still, the
+video is copied to the same species folder.
+
+```
+  🎥  DCIM/DSCF0042.AVI    white-tailed deer    → white-tailed_deer/DSCF0042.AVI
+  ·   3 video(s) had no matching still event — skipped
+```
+
+This works because game cams almost always shoot stills and video for the same
+trigger event within seconds of each other. The rare case — video only, no
+companion still — is noted in the summary and log.
+
+### Video strategy options
+
+Five approaches exist, from simplest to most complex:
+
+| Option | Approach | Pros | Cons |
+|--------|----------|------|------|
+| **1. Keyframe extract** | ffmpeg extracts 1 frame/Ns → SpeciesNet → copy video if hit | Uses same classifier | Requires ffmpeg, adds time |
+| **2. MegaDetector** | `run_md_and_speciesnet` handles video natively | Purpose-built | Heavier install, prefers NVIDIA GPU |
+| **3. First frame only** | Extract thumbnail/first frame, classify it | Very fast | High false negative — animal may not be in first frame |
+| **4. Copy all video** | Skip classification, copy everything to `_video/` | Zero false negatives | No triage value |
+| **5. Timestamp match** ✓ | Match video to classified stills by timestamp | No video processing, leverages stills work | Misses video-only events (rare) |
+
+**Option 5 is the default** — it requires no additional dependencies and handles
+the overwhelming majority of real game cam footage correctly. If you find you
+have significant video-only events, Option 1 (keyframe + ffmpeg) is the
+recommended upgrade path.
+
 ## Roadmap
 
 - [ ] Video support (frame extraction → SpeciesNet → copy original clip)

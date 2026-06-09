@@ -9,6 +9,42 @@ location:
   country: USA
   state: ME
 
+# ── Decision priority ────────────────────────────────────────────────────────
+# Every image is assigned exactly one outcome, evaluated in this order:
+#
+#   1. 🚨 ALERT   alert_labels or alert_if match AND confidence ≥ min_confidence
+#                 OVERRIDES skip_labels — a night-time human alerts even though
+#                 'human' appears in skip_labels for daytime use.
+#
+#   2. ✓  COPIED  not an alert, not in skip_labels, confidence ≥ min_confidence
+#
+#   3. ?  REVIEW  not skippable, but confidence < min_confidence
+#                 → copied to _review/ for manual inspection
+#
+#   4. ·  SKIP    label is in skip_labels (blank, vehicle, etc.)
+#
+# ── Alerts ───────────────────────────────────────────────────────────────────
+# Species that trigger an immediate alert — copied to _alerts/ subfolder
+# and flagged prominently in the summary. Add any species that warrant
+# immediate attention on your property.
+alert_labels:
+  - mountain lion
+  - cougar
+  - puma
+  - black bear        # property / livestock risk
+  - coyote            # livestock / pet threat
+  - wolf              # rare, always notable
+  - dog               # unknown dog on property
+  - fisher            # known predator of poultry
+
+# Context-sensitive alerts — alert only when detected at specific time of day.
+# Useful for species that are normal sometimes but suspicious at others.
+# time values: dawn / daytime / dusk / night
+# Multiple times per label accepted as a list.
+alert_if:
+  human:        [night, dawn]   # trespasser — daytime near driveway is fine
+  domestic cat: [night]         # cats active at night = predator behavior
+
 # ── Classification ────────────────────────────────────────────────────────────
 # min_confidence: 0.0–1.0. Images below this threshold go to the review queue
 #   rather than being copied or skipped outright.
@@ -59,6 +95,17 @@ species_behavior:
   fisher:                { active: nocturnal,   flag_if: daytime }
   river otter:           { active: diurnal,     flag_if: night   }
   porcupine:             { active: nocturnal,   flag_if: daytime }
+
+# ── Video ────────────────────────────────────────────────────────────────────
+# Game cams often shoot a burst of stills + a video clip for the same trigger.
+# Strategy: match video files to classified still events by filesystem timestamp.
+# If a still was copied (interesting or alert), copy its companion video too.
+# Videos with no matching still are skipped — very rare edge case.
+video:
+  enabled: true
+  # Max seconds between still and video timestamps to consider a match.
+  # 60s is conservative; tighten to 10s if your cam shoots nearly simultaneously.
+  timestamp_window_seconds: 60
 
 # ── Annotation ────────────────────────────────────────────────────────────────
 # Apple Foundation Models text annotation (macOS with Apple Intelligence).
