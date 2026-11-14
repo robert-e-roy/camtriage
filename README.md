@@ -1,3 +1,4 @@
+[![CI](https://github.com/robert-e-roy/camtriage/actions/workflows/ci.yml/badge.svg)](https://github.com/robert-e-roy/camtriage/actions/workflows/ci.yml)
 # camtriage
 
 Wildlife camera trap triage tool. Automatically sorts and annotates trail camera images using Google's [SpeciesNet](https://github.com/google/cameratrapai) classifier — no cloud API, no account required.
