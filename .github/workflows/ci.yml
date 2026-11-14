@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]   # SpeciesNet supports 3.9–3.13
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Light install only: SpeciesNet is run as a subprocess and apple-fm-sdk
+      # is macOS-only, so CI checks the script itself, not the models.
+      - name: Install lightweight dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml Pillow ruff
+
+      # Hard errors only (syntax errors, undefined names), so style nits
+      # never turn the badge red.
+      - name: Lint (errors only)
+        run: ruff check --select E9,F63,F7,F82 --output-format=github .
+
+      - name: Byte-compile
+        run: python -m py_compile camtriage.py
+
+      - name: CLI smoke test
+        run: python camtriage.py --help
+
+      - name: Config example parses
+        run: python -c "import yaml; yaml.safe_load(open('config.example.yaml'))"
